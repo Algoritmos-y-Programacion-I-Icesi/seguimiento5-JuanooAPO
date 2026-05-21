@@ -44,28 +44,17 @@ public class ParqueController {
 
          atracciones.add(atraccion);
     }
-
-     /**
-     * Busca una atraccion por nombre y registra sus visitantes del dia.
-     * @param nombreAtraccion nombre de la atraccion
-     * @param visitantesPorDia cantidad de visitantes del dia
-     */
-    public void registrarVisitantes(String nombreAtraccion, int visitantesPorDia) {
+ public void registrarVisitantes(String nombreAtraccion, int visitantesPorDia) {
         Atraccion atraccionEncontrada = buscarAtraccionPorNombre(nombreAtraccion);
 
         if (atraccionEncontrada == null) {
             System.out.println("No se encontro una atraccion con el nombre: " + nombreAtraccion);
         } else {
             atraccionEncontrada.setVisitantesPorDia(visitantesPorDia);
+            System.out.println("Visitantes registrados correctamente.");
         }
     }
 
-    /**
-     * Busca una atraccion por su nombre.
-     * 
-     * @param nombreAtraccion nombre de la atraccion buscada
-     * @return la atraccion encontrada o null si no existe
-     */
     public Atraccion buscarAtraccionPorNombre(String nombreAtraccion) {
         for (Atraccion atraccion : atracciones) {
             if (atraccion.getNombre().equalsIgnoreCase(nombreAtraccion)) {
@@ -76,41 +65,90 @@ public class ParqueController {
         return null;
     }
 
-    // ---------------------------------------------------------------
-    // CALCULOS Y REPORTES
-    // ---------------------------------------------------------------
-
-    /**
-     *
-     */
     public double calcularIngresoTotalDiario() {
-        //Completar para cumplir con el requerimiento
-        return 0;
+        double total = 0;
+
+        for (Atraccion atraccion : atracciones) {
+            total += atraccion.calcularIngresoDiario();
+        }
+
+        return total;
     }
 
-    /**
-     *
-     */
     public void mostrarIngresosDiarios() {
-        //Completar para cumplir con el requerimiento
+        System.out.println("\n--- INGRESOS DIARIOS ---");
+
+        for (Atraccion atraccion : atracciones) {
+            System.out.println(
+                    atraccion.getNombre() + ": $" +
+                    String.format("%,.2f", atraccion.calcularIngresoDiario())
+            );
+        }
+
+        System.out.println("Ingreso total del parque: $" +
+                String.format("%,.2f", calcularIngresoTotalDiario()));
     }
 
-    /**
-     */
     public void generarReporteOperaciones() {
-        //Completar para cumplir con el requerimiento
+        System.out.println("\n--- REPORTE DE OPERACIONES ---");
+
+        for (Atraccion atraccion : atracciones) {
+            System.out.println(atraccion);
+            System.out.println("Mantenimiento necesario: " +
+                    (atraccion.esNecesarioMantenimiento() ? "SI" : "NO"));
+        }
     }
 
-    public void mostrarAtraccionesClasifRiesgo(){
-        //Completar para cumplir con el requerimiento
-    }
-    public void generarReporteAlertasCapacidad(){
-        //Completar para cumplir con el requerimiento
+    public void mostrarAtraccionesClasifRiesgo() {
+        System.out.println("\n--- ATRACCIONES CON CLASIFICACION DE RIESGO ---");
+
+        for (Atraccion atraccion : atracciones) {
+            if (atraccion instanceof ClasificableRiesgo) {
+                ClasificableRiesgo riesgo = (ClasificableRiesgo) atraccion;
+
+                System.out.println(
+                        atraccion.getNombre() +
+                        " - Riesgo: " +
+                        riesgo.clasificarRiesgo()
+                );
+            }
+        }
     }
 
-    for(i=0; i<atracciones.size(); i++){
-        if(atracciones.get(i).esNecesarioMantenimiento()){
-            System.out.println(atracciones.get(i).getNombre());
+    public void generarReporteAlertasCapacidad() {
+        System.out.println("\n--- ALERTAS DE CAPACIDAD ---");
+
+        boolean hayAlertas = false;
+
+        for (Atraccion atraccion : atracciones) {
+            if (atraccion.tieneAlertaCapacidad()) {
+                hayAlertas = true;
+
+                System.out.println(
+                        atraccion.getNombre() +
+                        " excedio la capacidad por " +
+                        atraccion.calcularVisitantesExcedidos() +
+                        " visitantes. Sobreocupacion: " +
+                        String.format("%.2f", atraccion.calcularPorcentajeSobreocupacion()) +
+                        "%"
+                );
+            }
+        }
+
+        if (!hayAlertas) {
+            System.out.println("No hay atracciones con alerta de capacidad.");
+        }
+    }
+
+    public void mostrarAtraccionesConMantenimiento() {
+        System.out.println("\n--- ATRACCIONES QUE REQUIEREN MANTENIMIENTO ---");
+
+        for (Atraccion atraccion : atracciones) {
+            if (atraccion.esNecesarioMantenimiento()) {
+                System.out.println(atraccion.getNombre());
+            }
         }
     }
 }
+
+
